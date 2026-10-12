@@ -5,124 +5,148 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bozor ro'yxati</title>
 <style>
-:root{--bg:#F4F5F7;--card:#fff;--ink:#1B1F2A;--muted:#667085;--line:#D9DDE5;--accent:#E4572E;--onacc:#fff;--new:#2563EB;--newbg:#E6EEFF;--red:#C62828;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141A;--card:#1C2029;--ink:#ECEFF5;--muted:#98A1B3;--line:#2D3340;--accent:#FF7A55;--onacc:#1A0C07;--new:#7FA6FF;--newbg:#1D2A4A;--red:#FF8A80}}
+:root{--bg:#F3F4F7;--card:#fff;--ink:#1B1F2A;--muted:#667085;--line:#E0E3EA;--accent:#E4572E;--onacc:#fff;--new:#2563EB;--newbg:#E8EFFF;--red:#C62828;--sh:0 1px 3px rgba(20,25,40,.08);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141A;--card:#1C2029;--ink:#ECEFF5;--muted:#98A1B3;--line:#2D3340;--accent:#FF7A55;--onacc:#1A0C07;--new:#7FA6FF;--newbg:#1D2A4A;--red:#FF8A80;--sh:none}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
-.wrap{max-width:640px;margin:0 auto;padding:18px 16px 48px}
-h1{font-size:26px;margin:4px 0 16px;letter-spacing:-.02em}
-h2{font-size:18px;margin:26px 0 10px;display:flex;justify-content:space-between;align-items:baseline}
-h2 small{font-weight:400;color:var(--muted);font-size:14px}
-h3{margin:0 0 10px;font-size:17px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:14px 16px 10px;display:flex;align-items:baseline;justify-content:space-between;max-width:640px;margin:0 auto}
+.bar h1{font-size:24px;margin:0;letter-spacing:-.02em}
+.bar .sub{color:var(--muted);font-size:14px}
+main{max-width:640px;margin:0 auto;padding:4px 16px calc(170px + env(safe-area-inset-bottom,0px))}
 input,button,select{font:inherit;color:inherit}
-input[type=search],input[type=number],input[type=text]{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--card)}
+input[type=search],input[type=number],input[type=text]{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--card)}
 input:focus-visible,button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-button{cursor:pointer;border:0;border-radius:10px;padding:11px 16px;background:var(--accent);color:var(--onacc);font-weight:600;display:inline-flex;align-items:center;gap:8px;justify-content:center}
-button.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
-button.ic{padding:8px;border-radius:50%;background:transparent;color:var(--muted)}
-button.ic:hover{color:var(--red);background:var(--bg)}
-button.ic.addb{color:var(--onacc);background:var(--accent);flex:none}
-button.ic.addb:hover{color:var(--onacc);background:var(--accent)}
+button{cursor:pointer;border:0;border-radius:12px;padding:12px 18px;background:var(--accent);color:var(--onacc);font-weight:600;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+button.ghost{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+button.wide{width:100%;margin-top:12px}
+button.ic{padding:9px;border-radius:50%;background:transparent;color:var(--muted)}
+button.ic:hover{color:var(--red)}
+button.addb{width:44px;height:44px;padding:0;border-radius:50%;background:var(--accent);color:var(--onacc);flex:none}
 ul{list-style:none;margin:0;padding:0}
-.res{margin-top:10px;background:var(--card);border-radius:12px;border:1px solid var(--line);overflow:hidden}
-.res li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px 10px 14px;border-top:1px solid var(--line)}
-.res li:first-child{border-top:0}
-.res .p{color:var(--muted);font-size:14px}
+[hidden]{display:none!important}
+.sbox{position:relative}
+.sbox svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.sbox input{height:54px;padding-left:46px;font-size:17px;border-radius:14px;box-shadow:var(--sh)}
+.hint{color:var(--muted);font-size:14px;margin:14px 4px 0}
+.res{margin-top:12px;background:var(--card);border-radius:14px;box-shadow:var(--sh);overflow:hidden}
+.res li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px 10px 16px;min-height:64px}
+.res li+li{border-top:1px solid var(--line)}
+.res li.new{background:var(--newbg)}
 .res .l{min-width:0}
 .res .l b{font-weight:600;display:block;overflow-wrap:anywhere}
-.res li.new{background:var(--newbg)}
-.empty{padding:14px;color:var(--muted)}
+.res .p{color:var(--muted);font-size:13px}
+.res .in{color:var(--accent);font-weight:600;margin-left:8px}
 .tag{display:inline-block;background:var(--new);color:var(--card);font-size:12px;font-weight:700;border-radius:6px;padding:0 7px;margin-left:8px;vertical-align:middle}
-.basket li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
-.basket li.new{border-left:5px solid var(--new);background:var(--newbg)}
-.top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:700}
-.ctl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-.ctl label{font-size:13px;color:var(--muted);display:block}
-.ctl select{margin-left:6px;border:1px solid var(--line);border-radius:6px;background:var(--card);padding:1px 4px}
-.ctl input{margin-top:3px;padding:9px 10px}
-.sum{grid-column:1/-1;text-align:right;font-weight:700}
-.total{display:flex;justify-content:space-between;font-size:20px;font-weight:800;padding:12px 4px}
+.none{padding:16px;color:var(--muted)}
+.np{background:var(--card);border:2px solid var(--new);border-radius:14px;padding:16px;margin-top:14px}
+.np h3{margin:0 0 6px;font-size:18px}
+.np label{display:block;font-size:13px;color:var(--muted);margin-top:10px;margin-bottom:3px}
+.np select{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--card)}
 .row{display:flex;gap:10px;flex-wrap:wrap}
-.np{background:var(--card);border:2px solid var(--new);border-radius:12px;padding:14px;margin-top:12px}
-.np label{display:block;font-size:13px;color:var(--muted);margin-top:8px}
-.np select{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--card)}
-.np .row{margin-top:14px}
-.msg{color:var(--accent);font-size:14px;min-height:20px;margin-top:6px}
-[hidden]{display:none!important}
-.top{align-items:flex-start}
+.np .row{margin-top:16px}
+.empty2{text-align:center;color:var(--muted);padding:48px 16px}
+.empty2 p{margin:0 0 16px;font-size:17px}
+.basket li{background:var(--card);border-radius:16px;box-shadow:var(--sh);padding:14px;margin-bottom:12px}
+.basket li.new{border-left:5px solid var(--new);background:var(--newbg)}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .ti{min-width:0}
-.nm{font-size:17px;overflow-wrap:anywhere}
-.codes{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+.nm{font-weight:700;font-size:17px;overflow-wrap:anywhere}
+.codes{display:block;font-size:13px;color:var(--muted)}
 .codes span{margin-right:12px}
+.act{display:flex;gap:6px;align-items:center;flex:none}
+button.danger{background:var(--red);color:#fff;padding:8px 12px}
+button.sm2{padding:8px 12px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 .f.q{grid-column:1/-1}
 .lb{display:block;font-size:13px;color:var(--muted);margin-bottom:3px}
 .qs{display:flex;gap:8px;align-items:center}
-.qs .qy{width:86px;text-align:center;margin:0;padding:9px 6px}
-.qs select{border:1.5px solid var(--line);border-radius:10px;background:var(--card);padding:9px 8px}
-button.st{width:44px;height:44px;padding:0;font-size:24px;line-height:1;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:10px;flex:none}
-.grid input{margin:0;padding:10px}
+.qs .qy{width:92px;text-align:center;padding:10px 6px;font-weight:700}
+.qs select{border:1.5px solid var(--line);border-radius:12px;background:var(--card);padding:10px 8px}
+button.st{width:46px;height:46px;padding:0;font-size:24px;line-height:1;background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;flex:none}
+.grid input{padding:11px}
 .sm{margin-top:12px;font-weight:700;display:flex;gap:16px;flex-wrap:wrap;justify-content:flex-end}
 .sm:empty{display:none}
-.act{display:flex;gap:6px;align-items:center;flex:none}
-button.danger{background:var(--red);color:#fff;padding:8px 12px}
-button.sm2{padding:8px 12px}
-.sumbox{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 14px}
-.sr{display:flex;justify-content:space-between;padding:9px 0;font-size:17px}
-.sr+.sr{border-top:1px solid var(--line)}
-.sr b{font-weight:800}
-.note{color:var(--muted);font-size:13px;margin:10px 0 0}
+.note{color:var(--muted);font-size:13px;margin:14px 2px 0}
+.sumbar{position:fixed;left:0;right:0;bottom:calc(62px + env(safe-area-inset-bottom,0px));z-index:6;max-width:640px;margin:0 auto;padding:0 12px}
+.sumin{background:var(--ink);color:var(--bg);border-radius:16px;padding:10px 16px;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.s1{display:flex;justify-content:space-between;align-items:baseline;font-size:15px}
+.s1 b{font-size:21px}
+.s2{display:flex;justify-content:space-between;font-size:14px;opacity:.85;margin-top:2px}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--card);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;padding-bottom:env(safe-area-inset-bottom,0px)}
+.tab{background:transparent;color:var(--muted);flex-direction:column;gap:2px;border-radius:0;font-size:13px;padding:8px 0;height:62px;position:relative}
+.tab[aria-current=page]{color:var(--accent)}
+.badge{position:absolute;top:6px;left:calc(50% + 6px);min-width:20px;height:20px;border-radius:10px;background:var(--accent);color:var(--onacc);font-size:12px;font-style:normal;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9;max-width:90%;text-align:center}
+.toast.on{opacity:1}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
-<div class="wrap">
-<h1>Bozor ro'yxati</h1>
-
-<input id="q" type="search" placeholder="Nomi, SKU yoki shtrix kod bo'yicha qidiring" aria-label="Tovar qidirish" autocomplete="off">
-<ul class="res" id="res" hidden></ul>
-<div class="row" style="margin-top:10px"><button id="newbtn" class="ghost"><span class="i"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>Yangi tovar qo'shish</button></div>
-
-<div class="np" id="np" hidden>
-  <h3>Yangi tovar</h3>
-  <label for="nn">Tovar nomi</label><input id="nn" type="text" autocomplete="off">
-  <label for="nu">Birligi</label><select id="nu"><option>kg</option><option>dona</option></select>
-  <label for="npr">Kelish narxi (so'm)</label><input id="npr" type="number" inputmode="numeric" min="0" step="100">
-  <div class="row"><button id="nsave">Saqlash va savatchaga solish</button><button id="ncancel" class="ghost">Bekor qilish</button></div>
-</div>
-
-<h2>Savatcha <small id="cnt"></small></h2>
-<ul class="basket" id="basket"></ul>
-<div class="sumbox">
-  <div class="sr"><span>Kelish jami</span><b id="tb">0 so'm</b></div>
-  <div class="sr" id="rs" hidden><span>Sotish jami</span><b id="ts"></b></div>
-  <div class="sr" id="rp" hidden><span>Foyda</span><b id="tp"></b></div>
-</div>
-<div style="height:12px"></div>
-<div class="row">
-  <button id="xl"><span class="i"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg></span>Excelga saqlash</button>
-  <button id="clear" class="ghost"><span class="i"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12h10l1-12M9 7V4h6v3"/></svg></span>Tozalash</button>
-</div>
-<div class="msg" id="msg" role="status"></div>
-<p class="note">Savat shu telefonda avtomatik saqlanadi: boshqa ilovaga o'tib qaytsangiz ham o'chmaydi.</p>
-</div>
+<header class="bar"><h1 id="ttl">Tovarlar</h1><span class="sub" id="cnt"></span></header>
+<main>
+<section id="p1">
+  <div class="sbox"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="search" placeholder="Nomi, SKU yoki shtrix kod" aria-label="Tovar qidirish" autocomplete="off"></div>
+  <ul class="res" id="res" hidden></ul>
+  <p class="hint" id="hint"></p>
+  <button id="newbtn" class="ghost wide"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Yangi tovar qo'shish</button>
+  <div class="np" id="np" hidden>
+    <h3>Yangi tovar</h3>
+    <label for="nn">Tovar nomi</label><input id="nn" type="text" autocomplete="off">
+    <label for="nu">Birligi</label><select id="nu"><option>kg</option><option>dona</option></select>
+    <label for="npr">Kelish narxi (so'm)</label><input id="npr" type="number" inputmode="numeric" min="0" step="100" placeholder="0">
+    <div class="row"><button id="nsave">Saqlash va savatchaga solish</button><button id="ncancel" class="ghost">Bekor qilish</button></div>
+  </div>
+</section>
+<section id="p2" hidden>
+  <div class="empty2" id="emp" hidden><p>Savatcha bo'sh</p><button id="tolist"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Tovar qo'shish</button></div>
+  <ul class="basket" id="basket"></ul>
+  <div class="row" id="acts">
+    <button id="xl"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>Excelga saqlash</button>
+    <button id="clear" class="ghost"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12h10l1-12M9 7V4h6v3"/></svg>Tozalash</button>
+  </div>
+  <p class="note">Savat shu telefonda avtomatik saqlanadi: boshqa ilovaga o'tib qaytsangiz ham o'chmaydi.</p>
+</section>
+</main>
+<div class="sumbar" id="sumbar" hidden><div class="sumin">
+  <div class="s1"><span>Kelish jami</span><b id="tb">0 so'm</b></div>
+  <div class="s2" id="s2" hidden><span>Sotish: <span id="ts"></span></span><span>Foyda: <span id="tp"></span></span></div>
+</div></div>
+<nav class="tabs" aria-label="Sahifalar">
+  <button class="tab" id="t1" aria-current="page"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>Tovarlar</button>
+  <button class="tab" id="t2"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 11h10.2l2-8H6.2"/><circle cx="10" cy="20" r="1"/><circle cx="17" cy="20" r="1"/></svg>Savatcha<i class="badge" id="bd" hidden></i></button>
+</nav>
+<div class="toast" id="msg" role="status"></div>
 
 <script>
-const PLUS='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',TRASH='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12h10l1-12M9 7V4h6v3"/></svg>';
+const PLUS='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',TRASH='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12h10l1-12M9 7V4h6v3"/></svg>';
 const P=[["Yalpiz Dona",1000,"dona","580","2200000049674"],["Selder Dona",2000,"dona","30268","2200000049667"],["Petrushka dona",1400,"dona","30267","2200000049650"],["Rukola dona",1333,"dona","534","2200000049711"],["Salat bargi dona",4000,"dona","1141","2200000046963"],["Kashnich dona",1300,"dona","556","2200000049681"],["Ukrop dona",1300,"dona","32652","2200000066749"],["Pomidor kg qizil",13000,"kg","18704",""],["Bolgarskiy kg Kalif. Ko'k",13000,"kg","91",""],["Bolgarskiy kg Kalif. Qizil",25000,"kg","50",""],["Baqlajon kg",4500,"kg","54",""],["Bolgarskiy Kg Qizil / Ko'k",10000,"kg","3036",""],["Kapusta bryuselsskaya kg",30000,"kg","334",""],["Olma semerenko kg",7000,"kg","32",""],["Bexi kg",22000,"kg","228",""],["Avokado Dona",20000,"dona","9925","2200000061935"],["Ananas Xitoy 1d",34000,"dona","28252","2300000005479"],["Drakon Pitaxaya",20000,"dona","50934","2200000066299"],["Mango 1d Katta",35000,"dona","21673","2200000060792"],["Apelsin kg",24000,"kg","6541",""],["Kivi kg Xitoy",13000,"kg","6288",""],["Olma Golden kg Super",17000,"kg","19907",""],["Olma Granny Smith kg",25000,"kg","19162",""],["Pomidor kg Pushti",17500,"kg","16803",""],["Anor Chegirma Kg",0,"kg","1296",""],["Golubika Driscoll's (125)",20000,"dona","31428","812049006116,0812049006116,8717496043122,8717496040107,8717496042750,7751262001566,4780147750056,2026210040"],["Anor Kg",25000,"kg","2828",""],["Uzum Kg Rizamat Otbor",38000,"kg","1343",""],["Uzum kg Ketmon",29000,"kg","21368",""],["Hurmo kg",25000,"kg","798",""],["Qulupnay kg",105000,"kg","16839",""],["Gribi veshenki kg",40000,"kg","220",""],["Gribi shampin'oni kg",70000,"kg","219",""],["Qovoq kg",1800,"kg","75",""],["Qovun sht Jo'ra Qand",20000,"dona","286937","2200000035226"],["Tarvuz Kg",3000,"kg","5620",""],["Jackfruit / Джекфрут шт",50000,"dona","21951","2200000070180"],["Mandarin kg",32000,"kg","9841",""],["Olma Krepson kg",23000,"kg","5262",""],["Janbul dona / Jambul dona",10000,"dona","531",""],["Jandiq dona / Janduq dona",5000,"dona","15174","2200000047427"],["O'rik kg danak mag'iz",55000,"kg","540",""],["Osh Nabor",10000,"dona","47765","2200000061904"],["Uzum kg muskat",85455,"kg","1321",""],["Pomelo 1d",25000,"dona","23209","6832466981234"],["Jandiq 0.5L bak.",6000,"dona","25336","2200000043757"],["Tok bargi Yangi",6500,"dona","7800","2200000068132"],["Piyoz kg",2800,"kg","113",""],["Bodring kg",13000,"kg","62",""],["Greypfrut kg",27000,"kg","21478",""],["Oltiariq Turp kg",6000,"kg","80",""],["Sholg'om kg",10000,"kg","89",""],["Lavlagi kg",6000,"kg","55",""],["Sabzi sariq kg yuvilmagan",7000,"kg","47",""],["Kabachki kg",13000,"kg","68",""],["Bolgarskiy kg Kalif. Sariq.",29000,"kg","1815",""],["Limon kg",25000,"kg","1616",""],["Olma Qandl Kg",13000,"kg","115",""],["Nok Dyushes Kg",30000,"kg","9813",""],["Малина (125)гр",30000,"dona","35044","8717496041760,8717496041784,715756100019,7503018074078,56063684"],["Ежевика Driscoll's 125гр",55000,"dona","18523","8717496042071"],["Olma Avgon kg",7000,"kg","9823",""],["Nok kg Xitoy",13000,"kg","9821",""],["Mango 1d Smail",16000,"dona","44783","2200000060808"],["Laym kg №1",66000,"kg","1314",""],["Shaftoli boymat kg",30000,"kg","1323",""],["Papayya D",37500,"dona","50485","2200000060600"],["Uzum kg Kishmish",25000,"kg","18470",""],["Nok kg Mestniy",11000,"kg","79",""],["Kivi kg Chili",57778,"kg","2939",""],["Olma Pink Lady Kg",22000,"kg","777",""],["Do'lana kg",15000,"kg","1053",""],["Mangustin 1 dona",12821,"dona","51485","2200000066657"],["Olma besh yulduz kg",11000,"kg","5879",""],["Golubika Juicy Garden 500gr",95000,"dona","54891","2200000069672"],["Yejivika Driscoll's 300gr",32000,"dona","15266","4620038450040"],["Yashil Fasol Kg",10000,"kg","264",""],["Marakuyya Dona",17000,"dona","53612","2200000068354"],["Banan Kg",17500,"kg","124",""],["Golubika Driscoll's 250gr",65000,"dona","36423","8720195169970,8717496056443"],["Smorodina Driscoll's 125gr",50000,"dona","36007","2200000066206"],["Sparja Dona",4666,"dona","48300","2200000069399"],["Avokado hass Juicy Garden 2dona",39000,"dona","54892","2200000069689"],["Avokado 2dona",36000,"dona","19150","8717472780317,2200000049759"],["Ananas Xitoy",13333,"dona","7122","2200000065841"],["Ananas Upakovka 5/6dona",45833,"dona","37407","2200000062284"],["Ananas Baby Dona",50000,"dona","5981","6091303441113,5050372130459,7441084820413,7443005940057,4573231540103,2800158"],["Qalampir kg Qo'qon",20000,"kg","9968",""],["Chesnok kg",25000,"kg","128",""],["Olma Golden kg №2",12000,"kg","1354",""],["Kartoshka kg Sariq",5000,"kg","66",""],["Rayhon dona / Rayxon dona",2000,"dona","582","2200000068163"],["Salat bargi Lollo Rosso dona",5000,"dona","29743","2200000048820"],["Piyoz Parey kg",20000,"kg","6905",""],["Selder stebel kg",30000,"kg","6847",""],["Kivano 1dona",25000,"dona","50778","2200000065995"],["Ko'k Piyoz dona",3000,"dona","285480","2200000049704"],["Bolgarskiy kg yupqa",17000,"kg","59",""],["Pomidor kg Cherri №1",35000,"kg","17434",""],["Gulkaram kg",15000,"kg","67",""],["Uzum Ketmon chegirma kg",0,"kg","1386",""],["Mandarin Medovka Kg",34000,"kg","5244",""],["Kartoshka kg Qizil",6000,"kg","120",""],["Karam kg qizil",17000,"kg","58",""],["Ismaloq / Shpinat dona",5000,"dona","16161","2200000068194"],["Nok Dyushes Chegirma Kg",0,"kg","1389",""],["Oq Piyoz kg",5000,"kg","3064",""],["Qizil Piyoz kg",5000,"kg","73",""],["Karam kg",3500,"kg","112",""],["Olma Saltanat kg",5000,"kg","256",""],["Mandarin kg Argentina",31000,"kg","21532",""],["Aysberg dona",8000,"dona","1935","2200000049698"],["Brokkoli karam kg",25000,"kg","106",""],["Chesnok kg tozalangan",15000,"kg","18588",""],["Qalampir kg Garimdori kg Dungan",30000,"kg","71",""],["Sabzi qizil kg Yuvilgan",8000,"kg","9799",""],["Shavel dona / Щавель шт / Ot quloq",7500,"dona","526","2200000068200"],["Sabzi qizil kg yuvilmagan",7000,"kg","49",""],["Rediska dona",5000,"dona","16133","2200000068149"],["Krasniy peres Ostriy kg",20000,"kg","93",""],["Oq Turp Daykon Kg",10000,"kg","18132",""],["Meva Fizalis GoldenBerries",45000,"dona","1881","7706899000635"],["Jo'xori 1d",3000,"dona","37759","2200000053565"],["Mango kg/Манго сушёный вес",80000,"kg","9863",""],["Imbir kg",35000,"kg","194",""],["Qalampir sht",2000,"dona","15172","2200000047434"],["Kokos 1d",30000,"dona","2878312","2200000042774"],["Muzlatilgan Oblepixa (10kg) kg",80000,"kg","1241",""],["Muzlatilgan Klyukva (10kg) kg",100000,"kg","1235",""],["Muzlatilgan Chernika (10kg) kg",110000,"kg","1238",""]];
-const BASE=P.map(a=>({name:a[0],price:a[1],unit:a[2],sku:a[3],barcode:a[4],isNew:false}));
+const BASE=P.map(a=>({name:a[0],price:0,unit:a[2],sku:a[3],barcode:a[4],isNew:false}));
 const $=s=>document.querySelector(s);
 const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 let custom=load('bz_custom',[]), basket=load('bz_basket',[]);
 const all=()=>custom.concat(BASE);
 const fmt=n=>Math.round(n).toLocaleString('ru-RU')+" so'm";
-const say=t=>{$('#msg').textContent=t;setTimeout(()=>{if($('#msg').textContent===t)$('#msg').textContent=''},2500)};
+let tt;const say=t=>{const m=$('#msg');m.textContent=t;m.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>m.classList.remove('on'),2200)};
 const badge=()=>{const s=document.createElement('span');s.className='tag';s.textContent='Yangi';return s};
+$('#hint').textContent='Bazada '+BASE.length+' ta tovar. Nomi, SKU yoki shtrix kod bo\'yicha qidiring.';
+
+function go(p){
+  const two=p==='p2';
+  $('#p1').hidden=two;$('#p2').hidden=!two;
+  $('#t1').setAttribute('aria-current',two?'false':'page');$('#t2').setAttribute('aria-current',two?'page':'false');
+  $('#ttl').textContent=two?'Savatcha':'Tovarlar';
+  updTotal();window.scrollTo(0,0);
+}
+const route=()=>go(location.hash==='#savat'?'p2':'p1');
+$('#t1').onclick=()=>{location.hash=''};$('#t2').onclick=()=>{location.hash='savat'};
+$('#tolist').onclick=()=>{location.hash=''};
+window.addEventListener('hashchange',route);
 
 function renderRes(){
   const raw=$('#q').value.trim(),q=raw.toLowerCase(),ul=$('#res');ul.innerHTML='';
+  $('#hint').hidden=!!q;
   if(!q){ul.hidden=true;return}
   ul.hidden=false;
   const found=all().filter(i=>i.name.toLowerCase().includes(q)||(i.sku&&i.sku.includes(q))||(i.barcode&&i.barcode.includes(q))).slice(0,40);
@@ -130,25 +154,24 @@ function renderRes(){
     const li=document.createElement('li');if(i.isNew)li.className='new';
     const l=document.createElement('div');l.className='l';
     const b=document.createElement('b');b.textContent=i.name;if(i.isNew)b.appendChild(badge());
-    const p=document.createElement('span');p.className='p';p.textContent=(i.price?fmt(i.price)+' / ':'')+i.unit;
+    const p=document.createElement('span');p.className='p';p.textContent=i.unit;
+    if(basket.some(x=>x.name===i.name)){const s=document.createElement('span');s.className='in';s.textContent='Savatda';p.appendChild(s)}
     l.append(b,p);
-    const btn=document.createElement('button');btn.className='ic addb';btn.innerHTML=PLUS;btn.setAttribute('aria-label',i.name+" ni savatchaga qo'shish");btn.title="Qo'shish";
+    const btn=document.createElement('button');btn.className='addb';btn.innerHTML=PLUS;btn.setAttribute('aria-label',i.name+" ni savatchaga qo'shish");
     btn.onclick=()=>{add(i);$('#q').value='';renderRes();$('#q').focus()};
     li.append(l,btn);ul.appendChild(li);
   });
   if(!found.length){
-    const li=document.createElement('li');
-    const t=document.createElement('span');t.className='p';t.textContent='Bazada topilmadi.';
-    const b=document.createElement('button');b.className='ghost';b.innerHTML=PLUS+'<span></span>';b.lastChild.textContent='Yangi tovar';
-    b.onclick=()=>openPanel(raw);
-    li.append(t,b);ul.appendChild(li);
+    const li=document.createElement('li');li.className='none';li.style.display='block';
+    li.textContent='Bazada topilmadi. Pastdagi "Yangi tovar qo\'shish" tugmasidan foydalaning.';
+    ul.appendChild(li);
   }
 }
 
-function add(i){
+function add(i,price){
   const ex=basket.find(x=>x.name===i.name);
-  if(ex)ex.qty+=1;else basket.unshift({name:i.name,unit:i.unit,price:i.price||0,sell:0,qty:1,sku:i.sku||'',barcode:i.barcode||'',isNew:!!i.isNew});
-  save('bz_basket',basket);renderBasket();say(i.name+' savatchaga qo\'shildi');
+  if(ex)ex.qty+=1;else basket.unshift({name:i.name,unit:i.unit,price:price||0,sell:0,qty:1,sku:i.sku||'',barcode:i.barcode||'',isNew:!!i.isNew});
+  save('bz_basket',basket);renderBasket();say(i.name+" savatchaga qo'shildi");
 }
 const sumOf=x=>(+x.qty||0)*(+x.price||0);
 const sellOf=x=>(+x.qty||0)*(+x.sell||0);
@@ -156,15 +179,17 @@ function lookup(x){const f=all().find(i=>i.name===x.name)||{};return {sku:x.sku|
 function updTotal(){
   const buy=basket.reduce((s,x)=>s+sumOf(x),0),sell=basket.reduce((s,x)=>s+sellOf(x),0);
   const prof=basket.reduce((s,x)=>x.sell?s+(+x.qty||0)*((+x.sell||0)-(+x.price||0)):s,0);
-  $('#tb').textContent=fmt(buy);$('#rs').hidden=!sell;$('#rp').hidden=!sell;
-  $('#ts').textContent=fmt(sell);$('#tp').textContent=fmt(prof);
-  $('#cnt').textContent=basket.length?basket.length+' ta tovar':'';
+  const two=!$('#p2').hidden;
+  $('#tb').textContent=fmt(buy);$('#s2').hidden=!sell;$('#ts').textContent=fmt(sell);$('#tp').textContent=fmt(prof);
+  $('#sumbar').hidden=!(two&&basket.length);
+  $('#bd').hidden=!basket.length;$('#bd').textContent=basket.length;
+  $('#cnt').textContent=two&&basket.length?basket.length+' ta tovar':'';
+  $('#emp').hidden=!!basket.length;$('#acts').hidden=!basket.length;
 }
 const smText=x=>[x.price?'Kelish: '+fmt(sumOf(x)):'',x.sell?'Sotish: '+fmt(sellOf(x)):''].filter(Boolean).join('   ');
 
 function renderBasket(){
   const ul=$('#basket');ul.innerHTML='';
-  if(!basket.length){const li=document.createElement('li');li.className='empty';li.style.cssText='border:0;background:transparent';li.textContent="Savatcha bo'sh. Yuqoridan tovar qidiring.";ul.appendChild(li)}
   basket.forEach(x=>{
     const li=document.createElement('li');if(x.isNew)li.className='new';
     li.innerHTML=`<div class="top"><div class="ti"><span class="nm"></span><span class="codes"></span></div><div class="act"></div></div>
@@ -178,7 +203,8 @@ function renderBasket(){
     [c.sku&&'SKU: '+c.sku,c.barcode&&'Shtrix: '+c.barcode].filter(Boolean).forEach(t=>{const sp=document.createElement('span');sp.textContent=t;cd.appendChild(sp)});
     const un=li.querySelector('.un'),qy=li.querySelector('.qy'),pr=li.querySelector('.pr'),sl=li.querySelector('.sl'),sm=li.querySelector('.sm'),act=li.querySelector('.act');
     if(![...un.options].some(o=>o.value===x.unit))un.add(new Option(x.unit));
-    un.value=x.unit;qy.value=x.qty;pr.value=x.price||'';sl.value=x.sell||'';sm.textContent=smText(x);
+    un.value=x.unit;qy.value=x.qty;pr.value=x.price||0;sl.value=x.sell||'';sm.textContent=smText(x);
+    [qy,pr,sl].forEach(e=>e.addEventListener('focus',()=>e.select()));
     const upd=()=>{x.qty=parseFloat(qy.value)||0;x.price=parseFloat(pr.value)||0;x.sell=parseFloat(sl.value)||0;sm.textContent=smText(x);updTotal();save('bz_basket',basket)};
     qy.oninput=upd;pr.oninput=upd;sl.oninput=upd;
     un.onchange=()=>{x.unit=un.value;save('bz_basket',basket)};
@@ -213,15 +239,15 @@ $('#ncancel').onclick=()=>{$('#np').hidden=true};
 $('#nsave').onclick=()=>{
   const name=$('#nn').value.trim();if(!name){say('Tovar nomini yozing');$('#nn').focus();return}
   const ex=all().find(i=>i.name.toLowerCase()===name.toLowerCase());
-  if(ex){add(ex);say("Bunday tovar bazada bor, savatchaga qo'shildi")}
-  else{const it={name,unit:$('#nu').value,price:parseFloat($('#npr').value)||0,sku:'',barcode:'',isNew:true};custom.unshift(it);save('bz_custom',custom);add(it)}
+  if(ex)add(ex);
+  else{const it={name,unit:$('#nu').value,price:0,sku:'',barcode:'',isNew:true};custom.unshift(it);save('bz_custom',custom);add(it,parseFloat($('#npr').value)||0)}
   $('#np').hidden=true;$('#q').value='';renderRes();
 };
 
 $('#xl').onclick=()=>{
   if(!basket.length){say("Savatcha bo'sh");return}
   const head=['№','Tovar nomi','Shtrix kod','SKU','Miqdor','Birlik','Kelish narxi','Kelish summasi','Sotish narxi','Sotish summasi','Holati'];
-  const rows=basket.map((x,i)=>{const c=lookup(x);return [i+1,x.name,c.barcode,c.sku,x.qty,x.unit,x.price||'',Math.round(sumOf(x)),x.sell||'',x.sell?Math.round(sellOf(x)):'',x.isNew?'Yangi tovar':'']});
+  const rows=basket.map((x,i)=>{const c=lookup(x);return [i+1,x.name,c.barcode,c.sku,x.qty,x.unit,x.price||0,Math.round(sumOf(x)),x.sell||'',x.sell?Math.round(sellOf(x)):'',x.isNew?'Yangi tovar':'']});
   const buy=basket.reduce((s,x)=>s+sumOf(x),0),sell=basket.reduce((s,x)=>s+sellOf(x),0);
   const aoa=[head,...rows,['','Jami','','','','','',Math.round(buy),'',sell?Math.round(sell):'','']];
   const d=new Date(),fn='bozor-'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -242,7 +268,7 @@ const keep=()=>{save('bz_basket',basket);save('bz_custom',custom)};
 addEventListener('pagehide',keep);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')keep()});
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
-renderBasket();
+renderBasket();route();
 </script>
 </body>
 </html>
