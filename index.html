@@ -79,6 +79,10 @@ button.st{width:46px;height:46px;padding:0;font-size:24px;line-height:1;backgrou
 .badge{position:absolute;top:6px;left:calc(50% + 6px);min-width:20px;height:20px;border-radius:10px;background:var(--accent);color:var(--onacc);font-size:12px;font-style:normal;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 5px}
 .toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9;max-width:90%;text-align:center}
 .toast.on{opacity:1}
+@keyframes inR{from{transform:translateX(28px);opacity:0}to{transform:none;opacity:1}}
+@keyframes inL{from{transform:translateX(-28px);opacity:0}to{transform:none;opacity:1}}
+.inR{animation:inR .22s ease-out}.inL{animation:inL .22s ease-out}
+@media (prefers-reduced-motion:reduce){.inR,.inL{animation:none}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -105,7 +109,7 @@ button.st{width:46px;height:46px;padding:0;font-size:24px;line-height:1;backgrou
     <button id="xl"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>Excelga saqlash</button>
     <button id="clear" class="ghost"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12h10l1-12M9 7V4h6v3"/></svg>Tozalash</button>
   </div>
-  <p class="note">Savat shu telefonda avtomatik saqlanadi: boshqa ilovaga o'tib qaytsangiz ham o'chmaydi.</p>
+  <p class="note">Savat shu telefonda avtomatik saqlanadi: boshqa ilovaga o'tib qaytsangiz ham o'chmaydi. O'ngga surib tovarlar sahifasiga qaytishingiz mumkin.</p>
 </section>
 </main>
 <div class="sumbar" id="sumbar" hidden><div class="sumin">
@@ -130,19 +134,27 @@ const all=()=>custom.concat(BASE);
 const fmt=n=>Math.round(n).toLocaleString('ru-RU')+" so'm";
 let tt;const say=t=>{const m=$('#msg');m.textContent=t;m.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>m.classList.remove('on'),2200)};
 const badge=()=>{const s=document.createElement('span');s.className='tag';s.textContent='Yangi';return s};
-$('#hint').textContent='Bazada '+BASE.length+' ta tovar. Nomi, SKU yoki shtrix kod bo\'yicha qidiring.';
+$('#hint').textContent='Bazada '+BASE.length+' ta tovar. Nomi, SKU yoki shtrix kod bo\'yicha qidiring. Ekranni chapga surib savatchaga o\'tishingiz mumkin.';
 
+let cur='p1';
 function go(p){
-  const two=p==='p2';
+  const two=p==='p2',dir=p===cur?0:(two?1:-1);cur=p;
   $('#p1').hidden=two;$('#p2').hidden=!two;
   $('#t1').setAttribute('aria-current',two?'false':'page');$('#t2').setAttribute('aria-current',two?'page':'false');
   $('#ttl').textContent=two?'Savatcha':'Tovarlar';
   updTotal();window.scrollTo(0,0);
+  if(dir){const el=two?$('#p2'):$('#p1');el.classList.remove('inR','inL');void el.offsetWidth;el.classList.add(dir>0?'inR':'inL')}
 }
+function nav(p){if(p!==cur)history.pushState(null,'',p==='p2'?'#savat':'#');go(p)}
 const route=()=>go(location.hash==='#savat'?'p2':'p1');
-$('#t1').onclick=()=>{location.hash=''};$('#t2').onclick=()=>{location.hash='savat'};
-$('#tolist').onclick=()=>{location.hash=''};
-window.addEventListener('hashchange',route);
+$('#t1').onclick=()=>nav('p1');$('#t2').onclick=()=>nav('p2');$('#tolist').onclick=()=>nav('p1');
+addEventListener('popstate',route);
+let sx=0,sy=0,sOk=false;
+document.addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY;sOk=e.touches.length===1&&!e.target.closest('input,select,textarea')},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(!sOk)return;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
+  if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.6){if(dx<0&&cur==='p1')nav('p2');else if(dx>0&&cur==='p2')nav('p1')}
+},{passive:true});
 
 function renderRes(){
   const raw=$('#q').value.trim(),q=raw.toLowerCase(),ul=$('#res');ul.innerHTML='';
@@ -158,7 +170,7 @@ function renderRes(){
     if(basket.some(x=>x.name===i.name)){const s=document.createElement('span');s.className='in';s.textContent='Savatda';p.appendChild(s)}
     l.append(b,p);
     const btn=document.createElement('button');btn.className='addb';btn.innerHTML=PLUS;btn.setAttribute('aria-label',i.name+" ni savatchaga qo'shish");
-    btn.onclick=()=>{add(i);$('#q').value='';renderRes();$('#q').focus()};
+    btn.onclick=()=>{$('#q').value='';renderRes();add(i)};
     li.append(l,btn);ul.appendChild(li);
   });
   if(!found.length){
@@ -169,10 +181,12 @@ function renderRes(){
 }
 
 function add(i,price){
-  const ex=basket.find(x=>x.name===i.name);
-  if(ex)ex.qty+=1;else basket.unshift({name:i.name,unit:i.unit,price:price||0,sell:0,qty:1,sku:i.sku||'',barcode:i.barcode||'',isNew:!!i.isNew});
+  let it=basket.find(x=>x.name===i.name);
+  if(it)it.qty+=1;else{it={name:i.name,unit:i.unit,price:price||0,sell:0,qty:1,sku:i.sku||'',barcode:i.barcode||'',isNew:!!i.isNew};basket.unshift(it)}
   save('bz_basket',basket);renderBasket();say(i.name+" savatchaga qo'shildi");
+  nav('p2');focusQty(it);
 }
+function focusQty(it){const li=$('#basket').children[basket.indexOf(it)];if(!li)return;const q=li.querySelector('.qy');q.focus();q.select()}
 const sumOf=x=>(+x.qty||0)*(+x.price||0);
 const sellOf=x=>(+x.qty||0)*(+x.sell||0);
 function lookup(x){const f=all().find(i=>i.name===x.name)||{};return {sku:x.sku||f.sku||'',barcode:x.barcode||f.barcode||''}}
