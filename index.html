@@ -50,6 +50,29 @@ ul{list-style:none;margin:0;padding:0}
 .np .row{margin-top:14px}
 .msg{color:var(--accent);font-size:14px;min-height:20px;margin-top:6px}
 [hidden]{display:none!important}
+.top{align-items:flex-start}
+.ti{min-width:0}
+.nm{font-size:17px;overflow-wrap:anywhere}
+.codes{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+.codes span{margin-right:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.f.q{grid-column:1/-1}
+.lb{display:block;font-size:13px;color:var(--muted);margin-bottom:3px}
+.qs{display:flex;gap:8px;align-items:center}
+.qs .qy{width:86px;text-align:center;margin:0;padding:9px 6px}
+.qs select{border:1.5px solid var(--line);border-radius:10px;background:var(--card);padding:9px 8px}
+button.st{width:44px;height:44px;padding:0;font-size:24px;line-height:1;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:10px;flex:none}
+.grid input{margin:0;padding:10px}
+.sm{margin-top:12px;font-weight:700;display:flex;gap:16px;flex-wrap:wrap;justify-content:flex-end}
+.sm:empty{display:none}
+.act{display:flex;gap:6px;align-items:center;flex:none}
+button.danger{background:var(--red);color:#fff;padding:8px 12px}
+button.sm2{padding:8px 12px}
+.sumbox{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 14px}
+.sr{display:flex;justify-content:space-between;padding:9px 0;font-size:17px}
+.sr+.sr{border-top:1px solid var(--line)}
+.sr b{font-weight:800}
+.note{color:var(--muted);font-size:13px;margin:10px 0 0}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -65,20 +88,24 @@ ul{list-style:none;margin:0;padding:0}
   <h3>Yangi tovar</h3>
   <label for="nn">Tovar nomi</label><input id="nn" type="text" autocomplete="off">
   <label for="nu">Birligi</label><select id="nu"><option>kg</option><option>dona</option></select>
-  <label for="npr">Narxi (so'm, ixtiyoriy)</label><input id="npr" type="number" inputmode="numeric" min="0" step="100">
-  <label for="nsk">SKU kod (ixtiyoriy)</label><input id="nsk" type="text" autocomplete="off">
-  <label for="nbc">Shtrix kod (ixtiyoriy)</label><input id="nbc" type="text" inputmode="numeric" autocomplete="off">
+  <label for="npr">Kelish narxi (so'm)</label><input id="npr" type="number" inputmode="numeric" min="0" step="100">
   <div class="row"><button id="nsave">Saqlash va savatchaga solish</button><button id="ncancel" class="ghost">Bekor qilish</button></div>
 </div>
 
 <h2>Savatcha <small id="cnt"></small></h2>
 <ul class="basket" id="basket"></ul>
-<div class="total"><span>Jami</span><span id="total">0 so'm</span></div>
+<div class="sumbox">
+  <div class="sr"><span>Kelish jami</span><b id="tb">0 so'm</b></div>
+  <div class="sr" id="rs" hidden><span>Sotish jami</span><b id="ts"></b></div>
+  <div class="sr" id="rp" hidden><span>Foyda</span><b id="tp"></b></div>
+</div>
+<div style="height:12px"></div>
 <div class="row">
   <button id="xl"><span class="i"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg></span>Excelga saqlash</button>
   <button id="clear" class="ghost"><span class="i"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12h10l1-12M9 7V4h6v3"/></svg></span>Tozalash</button>
 </div>
 <div class="msg" id="msg" role="status"></div>
+<p class="note">Savat shu telefonda avtomatik saqlanadi: boshqa ilovaga o'tib qaytsangiz ham o'chmaydi.</p>
 </div>
 
 <script>
@@ -120,60 +147,22 @@ function renderRes(){
 
 function add(i){
   const ex=basket.find(x=>x.name===i.name);
-  if(ex)ex.qty+=1;else basket.push({name:i.name,unit:i.unit,price:i.price||0,qty:1,sku:i.sku||'',barcode:i.barcode||'',isNew:!!i.isNew});
+  if(ex)ex.qty+=1;else basket.unshift({name:i.name,unit:i.unit,price:i.price||0,sell:0,qty:1,sku:i.sku||'',barcode:i.barcode||'',isNew:!!i.isNew});
   save('bz_basket',basket);renderBasket();say(i.name+' savatchaga qo\'shildi');
 }
 const sumOf=x=>(+x.qty||0)*(+x.price||0);
-function updTotal(){$('#total').textContent=fmt(basket.reduce((s,x)=>s+sumOf(x),0));$('#cnt').textContent=basket.length?basket.length+' ta tovar':''}
-
-function renderBasket(){
-  const ul=$('#basket');ul.innerHTML='';
-  if(!basket.length){const li=document.createElement('li');li.className='empty';li.style.cssText='border:0;background:transparent';li.textContent="Savatcha bo'sh. Yuqoridan tovar qidiring.";ul.appendChild(li)}
-  basket.forEach((x,idx)=>{
-    const li=document.createElement('li');if(x.isNew)li.className='new';
-    li.innerHTML='<div class="top"><span class="nm"></span><button class="ic del" aria-label="O\'chirish" title="O\'chirish">'+TRASH+'</button></div><div class="ctl"><label>Miqdor<select class="un" aria-label="Birlik"><option>kg</option><option>dona</option></select><input type="number" inputmode="decimal" min="0" step="0.5" class="qy"></label><label>Narxi (so\'m)<input type="number" inputmode="numeric" min="0" step="100" class="pr"></label><div class="sum"></div></div>';
-    const nm=li.querySelector('.nm');nm.textContent=x.name;if(x.isNew)nm.appendChild(badge());
-    const un=li.querySelector('.un'),qy=li.querySelector('.qy'),pr=li.querySelector('.pr'),sm=li.querySelector('.sum');
-    if(![...un.options].some(o=>o.value===x.unit))un.add(new Option(x.unit));
-    un.value=x.unit;un.onchange=()=>{x.unit=un.value;save('bz_basket',basket)};
-    qy.value=x.qty;pr.value=x.price||'';
-    const upd=()=>{x.qty=parseFloat(qy.value)||0;x.price=parseFloat(pr.value)||0;sm.textContent=x.price?fmt(sumOf(x)):'';updTotal();save('bz_basket',basket)};
-    qy.oninput=upd;pr.oninput=upd;sm.textContent=x.price?fmt(sumOf(x)):'';
-    li.querySelector('.del').onclick=()=>{basket.splice(idx,1);save('bz_basket',basket);renderBasket()};
-    ul.appendChild(li);
-  });
-  updTotal();
-}
-
-function openPanel(name){
-  $('#np').hidden=false;$('#nn').value=name||'';$('#npr').value='';$('#nsk').value='';$('#nbc').value='';$('#nu').value='kg';
-  $('#np').scrollIntoView({behavior:'smooth',block:'center'});$('#nn').focus();
-}
-$('#newbtn').onclick=()=>openPanel($('#q').value.trim());
-$('#ncancel').onclick=()=>{$('#np').hidden=true};
-$('#nsave').onclick=()=>{
-  const name=$('#nn').value.trim();if(!name){say('Tovar nomini yozing');$('#nn').focus();return}
-  const ex=all().find(i=>i.name.toLowerCase()===name.toLowerCase());
-  if(ex){add(ex);say('Bunday tovar bazada bor, savatchaga qo\'shildi')}
-  else{
-    const it={name,unit:$('#nu').value,price:parseFloat($('#npr').value)||0,sku:$('#nsk').value.trim(),barcode:$('#nbc').value.trim(),isNew:true};
-    custom.unshift(it);save('bz_custom',custom);add(it);
-  }
-  $('#np').hidden=true;$('#q').value='';renderRes();
-};
-
-function lookup(x){const f=all().find(i=>i.name===x.name)||{};return {sku:x.sku||f.sku||'',barcode:x.barcode||f.barcode||''}}
+const sellOf=x=>(+x.qty||0)*(+x.sell||0);
 $('#xl').onclick=()=>{
   if(!basket.length){say("Savatcha bo'sh");return}
-  const head=['№','Tovar nomi','Shtrix kod','SKU','Miqdor','Birlik','Narx (so\'m)','Summa (so\'m)','Holati'];
-  const rows=basket.map((x,i)=>{const c=lookup(x);return [i+1,x.name,c.barcode,c.sku,x.qty,x.unit,x.price||0,Math.round(sumOf(x)),x.isNew?'Yangi tovar':'']});
-  const total=basket.reduce((s,x)=>s+sumOf(x),0);
-  const aoa=[head,...rows,['','Jami','','','','','',Math.round(total),'']];
+  const head=['№','Tovar nomi','Shtrix kod','SKU','Miqdor','Birlik','Kelish narxi','Kelish summasi','Sotish narxi','Sotish summasi','Holati'];
+  const rows=basket.map((x,i)=>{const c=lookup(x);return [i+1,x.name,c.barcode,c.sku,x.qty,x.unit,x.price||'',Math.round(sumOf(x)),x.sell||'',x.sell?Math.round(sellOf(x)):'',x.isNew?'Yangi tovar':'']});
+  const buy=basket.reduce((s,x)=>s+sumOf(x),0),sell=basket.reduce((s,x)=>s+sellOf(x),0);
+  const aoa=[head,...rows,['','Jami','','','','','',Math.round(buy),'',sell?Math.round(sell):'','']];
   const d=new Date(),fn='bozor-'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   try{
     if(typeof XLSX==='undefined')throw 0;
     const ws=XLSX.utils.aoa_to_sheet(aoa);
-    ws['!cols']=[{wch:4},{wch:34},{wch:16},{wch:10},{wch:9},{wch:8},{wch:13},{wch:14},{wch:12}];
+    ws['!cols']=[{wch:4},{wch:34},{wch:16},{wch:10},{wch:9},{wch:8},{wch:13},{wch:15},{wch:13},{wch:15},{wch:12}];
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Bozor');
     XLSX.writeFile(wb,fn+'.xlsx');say('Excel fayl saqlandi');
   }catch(e){
@@ -183,6 +172,10 @@ $('#xl').onclick=()=>{
 };
 $('#clear').onclick=()=>{if(basket.length&&confirm('Savatchani tozalaysizmi?')){basket=[];save('bz_basket',basket);renderBasket()}};
 $('#q').addEventListener('input',renderRes);
+const keep=()=>{save('bz_basket',basket);save('bz_custom',custom)};
+addEventListener('pagehide',keep);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')keep()});
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 renderBasket();
 </script>
 </body>
