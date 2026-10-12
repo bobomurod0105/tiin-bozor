@@ -152,6 +152,72 @@ function add(i){
 }
 const sumOf=x=>(+x.qty||0)*(+x.price||0);
 const sellOf=x=>(+x.qty||0)*(+x.sell||0);
+function lookup(x){const f=all().find(i=>i.name===x.name)||{};return {sku:x.sku||f.sku||'',barcode:x.barcode||f.barcode||''}}
+function updTotal(){
+  const buy=basket.reduce((s,x)=>s+sumOf(x),0),sell=basket.reduce((s,x)=>s+sellOf(x),0);
+  const prof=basket.reduce((s,x)=>x.sell?s+(+x.qty||0)*((+x.sell||0)-(+x.price||0)):s,0);
+  $('#tb').textContent=fmt(buy);$('#rs').hidden=!sell;$('#rp').hidden=!sell;
+  $('#ts').textContent=fmt(sell);$('#tp').textContent=fmt(prof);
+  $('#cnt').textContent=basket.length?basket.length+' ta tovar':'';
+}
+const smText=x=>[x.price?'Kelish: '+fmt(sumOf(x)):'',x.sell?'Sotish: '+fmt(sellOf(x)):''].filter(Boolean).join('   ');
+
+function renderBasket(){
+  const ul=$('#basket');ul.innerHTML='';
+  if(!basket.length){const li=document.createElement('li');li.className='empty';li.style.cssText='border:0;background:transparent';li.textContent="Savatcha bo'sh. Yuqoridan tovar qidiring.";ul.appendChild(li)}
+  basket.forEach(x=>{
+    const li=document.createElement('li');if(x.isNew)li.className='new';
+    li.innerHTML=`<div class="top"><div class="ti"><span class="nm"></span><span class="codes"></span></div><div class="act"></div></div>
+<div class="grid">
+<div class="f q"><span class="lb">Miqdor</span><div class="qs"><button class="st mi" aria-label="Kamaytirish">−</button><input class="qy" type="number" inputmode="decimal" min="0" step="0.5" aria-label="Miqdor"><button class="st pl" aria-label="Ko'paytirish">+</button><select class="un" aria-label="Birlik"><option>kg</option><option>dona</option></select></div></div>
+<div class="f"><label class="lb">Kelish narxi</label><input class="pr" type="number" inputmode="numeric" min="0" step="100"></div>
+<div class="f"><label class="lb">Sotish narxi</label><input class="sl" type="number" inputmode="numeric" min="0" step="100" placeholder="ixtiyoriy"></div>
+</div><div class="sm"></div>`;
+    const nm=li.querySelector('.nm');nm.textContent=x.name;if(x.isNew)nm.appendChild(badge());
+    const c=lookup(x),cd=li.querySelector('.codes');
+    [c.sku&&'SKU: '+c.sku,c.barcode&&'Shtrix: '+c.barcode].filter(Boolean).forEach(t=>{const sp=document.createElement('span');sp.textContent=t;cd.appendChild(sp)});
+    const un=li.querySelector('.un'),qy=li.querySelector('.qy'),pr=li.querySelector('.pr'),sl=li.querySelector('.sl'),sm=li.querySelector('.sm'),act=li.querySelector('.act');
+    if(![...un.options].some(o=>o.value===x.unit))un.add(new Option(x.unit));
+    un.value=x.unit;qy.value=x.qty;pr.value=x.price||'';sl.value=x.sell||'';sm.textContent=smText(x);
+    const upd=()=>{x.qty=parseFloat(qy.value)||0;x.price=parseFloat(pr.value)||0;x.sell=parseFloat(sl.value)||0;sm.textContent=smText(x);updTotal();save('bz_basket',basket)};
+    qy.oninput=upd;pr.oninput=upd;sl.oninput=upd;
+    un.onchange=()=>{x.unit=un.value;save('bz_basket',basket)};
+    const step=()=>x.unit==='dona'?1:0.5;
+    li.querySelector('.mi').onclick=()=>{qy.value=Math.max(0,Math.round(((parseFloat(qy.value)||0)-step())*100)/100);upd()};
+    li.querySelector('.pl').onclick=()=>{qy.value=Math.round(((parseFloat(qy.value)||0)+step())*100)/100;upd()};
+    let tm;
+    const showTrash=()=>{
+      clearTimeout(tm);act.innerHTML='';
+      const t=document.createElement('button');t.className='ic';t.innerHTML=TRASH;t.setAttribute('aria-label',"O'chirish");t.title="O'chirish";
+      t.onclick=showAsk;act.appendChild(t);
+    };
+    const showAsk=()=>{
+      act.innerHTML='';
+      const y=document.createElement('button');y.className='danger';y.textContent="O'chirish";
+      const n=document.createElement('button');n.className='ghost sm2';n.textContent='Bekor';
+      y.onclick=()=>{basket=basket.filter(z=>z!==x);save('bz_basket',basket);renderBasket()};
+      n.onclick=showTrash;act.append(y,n);tm=setTimeout(showTrash,5000);
+    };
+    showTrash();
+    ul.appendChild(li);
+  });
+  updTotal();
+}
+
+function openPanel(name){
+  $('#np').hidden=false;$('#nn').value=name||'';$('#npr').value='';$('#nu').value='kg';
+  $('#np').scrollIntoView({behavior:'smooth',block:'center'});$('#nn').focus();
+}
+$('#newbtn').onclick=()=>openPanel($('#q').value.trim());
+$('#ncancel').onclick=()=>{$('#np').hidden=true};
+$('#nsave').onclick=()=>{
+  const name=$('#nn').value.trim();if(!name){say('Tovar nomini yozing');$('#nn').focus();return}
+  const ex=all().find(i=>i.name.toLowerCase()===name.toLowerCase());
+  if(ex){add(ex);say("Bunday tovar bazada bor, savatchaga qo'shildi")}
+  else{const it={name,unit:$('#nu').value,price:parseFloat($('#npr').value)||0,sku:'',barcode:'',isNew:true};custom.unshift(it);save('bz_custom',custom);add(it)}
+  $('#np').hidden=true;$('#q').value='';renderRes();
+};
+
 $('#xl').onclick=()=>{
   if(!basket.length){say("Savatcha bo'sh");return}
   const head=['№','Tovar nomi','Shtrix kod','SKU','Miqdor','Birlik','Kelish narxi','Kelish summasi','Sotish narxi','Sotish summasi','Holati'];
